@@ -3,7 +3,7 @@ const db=require('../config/db')
 
 const UserEntity=db.define('userEntity',{
     id:{
-        type:DataTypes.INTEGER,
+        type:DataTypes.BIGINT,
        primaryKey:true,
        autoIncrement:true
     },
@@ -25,13 +25,17 @@ const UserEntity=db.define('userEntity',{
         type:DataTypes.STRING,
         allowNull:false
     },
-    isPrime:{
+    isOnline:{
         type:DataTypes.BOOLEAN,
         defaultValue:false
     },
-    totalAmount:{
-        type:DataTypes.FLOAT,
-        defaultValue:0.0
+    lastSeen:{
+        type:DataTypes.DATE,
+        defaultValue:DataTypes.NOW
+    },
+    profilePicture:{
+        type:DataTypes.STRING,
+        allowNull:true
     }
     
 })

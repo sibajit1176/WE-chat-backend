@@ -1,5 +1,5 @@
 require('dotenv').config()
-require('./models/index')
+require('./models')
 const http=require('http')
 const app=require('./app')
 const sequelize=require('./config/db')
@@ -11,7 +11,7 @@ const server=http.createServer(app)
 sequelize.authenticate()
 .then(()=>{
     console.log('Database connected');
-    return sequelize.sync()    
+    return sequelize.sync({alter:true})    
 }).then(()=>{
  
 server.listen(PORT,()=>{
