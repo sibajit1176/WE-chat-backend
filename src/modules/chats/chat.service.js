@@ -1,7 +1,7 @@
 const chatEntity = require("../../models/chat.model")
 const chatmemberEntity = require("../../models/chatmember")
 const UserEntity = require("../../models/usere.model")
-const sequelize=require('../../config/db');
+const sequelize = require('../../config/db');
 const { Op } = require("sequelize");
 
 const createPrivatechatService = async (loginUserId, phno) => {
@@ -12,7 +12,7 @@ const createPrivatechatService = async (loginUserId, phno) => {
             },
             transaction
         });
-        
+
         if (!findchatMember) {
             throw new Error("Invalid user");
         }
@@ -57,7 +57,7 @@ const createPrivatechatService = async (loginUserId, phno) => {
                 {
                     chatId: createChat.id,
                     userId: findchatMember.id,
-                    
+
                 }
             ],
             { transaction }
@@ -110,7 +110,14 @@ const getPrivateChatMemberofLoginUser = async (loginUserId) => {
         attributes: [["id", "chatId"]]
     });
 
-    return chats;
+    const formattedChats = chats.map(chat => ({
+        chatId: chat.dataValues.chatId,
+        userId: chat.otherMembers[0].userEntity.id,
+        name: chat.otherMembers[0].userEntity.name,
+        profilePicture: chat.otherMembers[0].userEntity.profilePicture
+    }));
+
+    return formattedChats;
 };
 
 

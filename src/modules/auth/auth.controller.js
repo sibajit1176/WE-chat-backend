@@ -1,4 +1,4 @@
-const  authService = require("./auth.service")
+const authService = require("./auth.service")
 
 const signup = async (req, res, next) => {
     try {
@@ -26,8 +26,18 @@ const login = async (req, res, next) => {
         next(error)
     }
 }
+const isVerify = async (req, res, next) => {
+    try {
+        const loginUserId = req.user.userId
 
+        const data = await authService.loginVerifyService(loginUserId)
+        res.status(200).send(data)
+    } catch (error) {
+        next(error)
+    }
+}
 module.exports = {
     signup,
-    login
+    login,
+    isVerify
 }

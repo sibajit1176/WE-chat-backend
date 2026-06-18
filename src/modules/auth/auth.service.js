@@ -64,7 +64,32 @@ const loginService = async (payload) => {
         token
     };
 };
+const loginVerifyService = async (id) => {
+
+    const validUser = await UserEntity.findOne({
+        where:{
+            id
+        }
+    });
+
+    if (!validUser) {
+        throw new Error("User not found");
+    }
+
+    return {
+        success: true,
+        message: "User details fetched successfully",
+        data: {
+            id: validUser.id,
+            name: validUser.name,
+            email: validUser.email,
+            phno: validUser.phoneNo,
+            profilePicture: validUser.profilePicture
+        }
+    };
+};
 module.exports={
     signupService,
-    loginService
+    loginService,
+    loginVerifyService
 }

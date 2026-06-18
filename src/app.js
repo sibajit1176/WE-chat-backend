@@ -2,6 +2,7 @@ const express=require('express')
 const errorMiddleware = require('./middlewares/errormiddleware')
 const authRoute=require('./modules/auth/auth.route')
 const chatRoute=require('./modules/chats/chat.route')
+const messageRoute=require('./modules/messages/message.route')
 const cors=require('cors')
 
 const app=express()
@@ -16,6 +17,8 @@ app.get('/',(req,res)=>{
 })
 app.use('/wechat',authRoute)
 app.use('/wechat',chatRoute)
+app.use('/wechat',messageRoute)
+
 
 app.use(errorMiddleware)
 
