@@ -63,10 +63,16 @@ const createPrivatechatService = async (loginUserId, phno) => {
             { transaction }
         );
 
+        const data={
+            chatId:createChat.id,
+            name:findchatMember.name,
+            userid:findchatMember.id,
+        }
+
         return {
             success: true,
             message: "Chat created successfully",
-            chatId: createChat.id
+            data
         };
     });
 };

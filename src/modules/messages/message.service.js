@@ -21,12 +21,26 @@ const sendMessageService = async (loginUserId, payload) => {
         messageType: "text",
         message
     });
+    // const updatelastSeen=await User.update(
+    //     {
+    //         lastSeen:Date.now()
+    //     },{
+    //     where:{
+    //         id:loginUserId
+    //     }}
+    // )
 
     return {
-        success: true,
-        message: "Message sent successfully",
-        data: newMessage
-    };
+    success: true,
+    message: "Message sent successfully",
+    data: {
+        messageId: newMessage.id,
+        chatId: newMessage.chatId,
+        userId: newMessage.senderId,
+        message: newMessage.message,
+        createdAt: newMessage.createdAt
+    }
+    }
 };
 
 const getMessageService = async (chatId, loginUserId) => {

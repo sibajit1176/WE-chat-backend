@@ -4,6 +4,7 @@ const http=require('http')
 const app=require('./app')
 const sequelize=require('./config/db')
 const {Server}=require('socket.io')
+const sockethandler=require('./sockets/socket')
 
 
 const PORT=process.env.PORT||6000
@@ -14,7 +15,7 @@ const io=new Server(server,{
         origin:"http://localhost:3000"
     }
 })
-
+sockethandler(io)
 
 sequelize.authenticate()
 .then(()=>{
