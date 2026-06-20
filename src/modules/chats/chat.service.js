@@ -63,10 +63,10 @@ const createPrivatechatService = async (loginUserId, phno) => {
             { transaction }
         );
 
-        const data={
-            chatId:createChat.id,
-            name:findchatMember.name,
-            userid:findchatMember.id,
+        const data = {
+            chatId: createChat.id,
+            name: findchatMember.name,
+            userid: findchatMember.id,
         }
 
         return {
@@ -113,21 +113,127 @@ const getPrivateChatMemberofLoginUser = async (loginUserId) => {
             }
         ],
 
-        attributes: [["id", "chatId"]]
+        attributes: [["id", "chatId"],"chatType"]
     });
 
     const formattedChats = chats.map(chat => ({
         chatId: chat.dataValues.chatId,
         userId: chat.otherMembers[0].userEntity.id,
         name: chat.otherMembers[0].userEntity.name,
-        profilePicture: chat.otherMembers[0].userEntity.profilePicture
+        profilePicture: chat.otherMembers[0].userEntity.profilePicture,
+        chatType:chat.dataValues.chatType
     }));
 
     return formattedChats;
 };
+const createGroupChatService = async (loginUserId, payload) => {
 
+    return await sequelize.transaction(async (transaction) => {
+
+        const { groupName, userIds } = payload;
+
+        if (userIds.length > 50) {
+            throw new Error("In One Group 50 Member allow")
+        }
+        const members = [...new Set(userIds)];
+
+        if (!members.includes(loginUserId)) {
+            members.push(loginUserId);
+        }
+
+        const users = await UserEntity.findAll({
+            where: {
+                id: members
+            },
+            transaction
+        });
+
+        if (users.length !== members.length) {
+            throw new Error("One or more users are invalid");
+        }
+
+        const existingChat = await chatEntity.findOne({
+            where: {
+                groupName,
+                chatType: "group",
+                chatKey: payload.groupName,
+                createdById: loginUserId
+            },
+            transaction
+        });
+
+        if (existingChat) {
+            throw new Error("Group name already exists");
+        }
+        const createChat = await chatEntity.create(
+            {
+                chatType: "group",
+                groupName,
+                createdById: loginUserId,
+                chatKey: payload.groupName
+            },
+            { transaction }
+        );
+
+        const chatMembers = members.map((userId) => ({
+            chatId: createChat.id,
+            userId
+        }));
+
+        await chatmemberEntity.bulkCreate(
+            chatMembers,
+            { transaction }
+        );
+
+        return {
+            success: true,
+            message: "Group created successfully",
+            data: {
+                chatId: createChat.id,
+                groupName,
+                members
+            }
+        };
+
+    });
+
+};
+const getGroupschat = async (loginUserId) => {
+    const groupChat = await chatEntity.findAll({
+        where: {
+            chatType: 'group',
+        },
+        include: [
+            {
+                model: chatmemberEntity,
+                as: "myMembership",
+                required: true,
+                where: {
+                    userId: loginUserId
+                },
+            }
+        ], attributes: [
+            ["id", "chatId"],
+            "groupName",
+            "groupImage",
+            "chatType"
+        ],
+
+        order: [["createdAt", "DESC"]]
+    });
+
+    return groupChat.map(group => ({
+        chatId: group.dataValues.chatId,
+        groupName: group.groupName,
+        groupImage: group.groupImage,
+        chatType:group.chatType
+    }));
+
+};
 
 module.exports = {
     createPrivatechatService,
-    getPrivateChatMemberofLoginUser
+    getPrivateChatMemberofLoginUser,
+    createGroupChatService,
+    getGroupschat
 };

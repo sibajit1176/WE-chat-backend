@@ -1,13 +1,13 @@
 const { User,ChatMember } = require('../../models');
 const Message = require('../../models/messages');
 
-const sendMessageService = async (loginUserId, payload) => {
+const sendMessageService = async (user, payload) => {
 
     const { chatId, message } = payload;
     const isMember = await ChatMember.findOne({
         where: {
             chatId,
-            userId: loginUserId
+            userId: user.userId
         }
     });
 
@@ -17,7 +17,7 @@ const sendMessageService = async (loginUserId, payload) => {
 
     const newMessage = await Message.create({
         chatId,
-        senderId: loginUserId,
+        senderId: user.userId,
         messageType: "text",
         message
     });
@@ -38,7 +38,8 @@ const sendMessageService = async (loginUserId, payload) => {
         chatId: newMessage.chatId,
         userId: newMessage.senderId,
         message: newMessage.message,
-        createdAt: newMessage.createdAt
+        sent: newMessage.createdAt,
+        userName:user.username
     }
     }
 };
@@ -73,7 +74,8 @@ const getMessageService = async (chatId, loginUserId) => {
         messageId: msg.id,
         userId: msg.userEntity.id,
         userName: msg.userEntity.name,
-        message: msg.message
+        message: msg.message,
+        sent:msg.createdAt
     }));
 
     return {

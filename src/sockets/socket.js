@@ -52,7 +52,7 @@ module.exports = (io) => {
 
                     const result =
                         await messageService.sendMessageService(
-                            socket.user.userId,
+                            socket.user,
                             payload
                         );
 

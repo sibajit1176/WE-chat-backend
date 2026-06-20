@@ -14,6 +14,20 @@ const createPrivatechatcontroller=async (req,res)=>{
         });
     }
 }
+const createGroupchatcontroller=async (req,res)=>{
+    try {
+        const loginUserId=req.user.userId
+        const result = await chatService.createGroupChatService(loginUserId,req.body)
+        return res.status(201).json(result)
+
+    } catch (error) {
+          return res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
 const getPrivateChatMemberofLoginUser=async(req,res)=>{
     try {
         const loginUserId=req.user.userId
@@ -28,7 +42,22 @@ const getPrivateChatMemberofLoginUser=async(req,res)=>{
     }
 }
 
+const getGroupChatscontroller=async(req,res)=>{
+    try {
+        const  loginUserId=req.user.userId
+        const result =await chatService.getGroupschat(loginUserId)
+        return res.status(200).json(result)
+    } catch (error) {
+        return res.status(400).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
 module.exports = {
     createPrivatechatcontroller,
-    getPrivateChatMemberofLoginUser
+    getPrivateChatMemberofLoginUser,
+    createGroupchatcontroller,
+    getGroupChatscontroller
 };
