@@ -28,7 +28,7 @@ const Message = sequelize.define(
                 'document',
                 'audio'
             ),
-            defaultValue: 'text'
+            allowNull: false
         },
 
         message: {
