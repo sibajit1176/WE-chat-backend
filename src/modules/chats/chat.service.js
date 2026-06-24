@@ -107,7 +107,7 @@ const getPrivateChatMemberofLoginUser = async (loginUserId) => {
                 include: [
                     {
                         model: UserEntity,
-                        attributes: ["id", "name", "profilePicture"]
+                        attributes: ["id", "name", "profilePicture","isOnline","lastSeen"]
                     }
                 ]
             }
@@ -121,7 +121,9 @@ const getPrivateChatMemberofLoginUser = async (loginUserId) => {
         userId: chat.otherMembers[0].userEntity.id,
         name: chat.otherMembers[0].userEntity.name,
         profilePicture: chat.otherMembers[0].userEntity.profilePicture,
-        chatType:chat.dataValues.chatType
+        chatType:chat.dataValues.chatType,
+        lastSeen:chat.otherMembers[0].userEntity.lastSeen,
+        isOnline:chat.otherMembers[0].userEntity.isOnline
     }));
 
     return formattedChats;
