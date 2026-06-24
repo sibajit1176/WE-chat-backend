@@ -20,7 +20,7 @@ app.get('/',(req,res)=>{
 app.use('/wechat',authRoute)
 app.use('/wechat',chatRoute)
 app.use('/wechat',messageRoute)
-app.use('wechat',aiRoutes)
+app.use('/wechat',aiRoutes)
 
 
 app.use(errorMiddleware)

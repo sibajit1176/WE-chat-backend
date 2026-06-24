@@ -14,44 +14,64 @@ Suggest ONLY 3 short next phrase completions.
 User typed:
 "${text}"
 
-Return JSON only.
-
-Example:
-[
-"tomorrow",
-"at 5 pm",
-"the office"
-]
+Return ONLY a JSON array.
+Do not use markdown.
+Do not wrap the response in \`\`\`json.
 `;
 
     const result = await model.generateContent(prompt);
 
-    return JSON.parse(result.response.text());
+    let response = result.response.text().trim();
 
+    response = response
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
+
+    return JSON.parse(response);
 };
 
 const smartReplies = async (message) => {
 
     const prompt = `
-Generate only 3 short replies.
+You are a JSON API.
+
+Generate exactly 3 short, relevant replies to the incoming message.
 
 Incoming message:
-
 "${message}"
 
-Return JSON.
+Rules:
+- Return ONLY a valid JSON array.
+- Do NOT use markdown.
+- Do NOT use \`\`\`.
+- Do NOT explain anything.
+- Each reply should be concise.
+
+Example:
 
 [
-"Yes",
-"No",
-"I'll join"
+  "Yes",
+  "No",
+  "I'll join"
 ]
 `;
 
     const result = await model.generateContent(prompt);
 
-    return JSON.parse(result.response.text());
+    let response = result.response.text().trim();
 
+    response = response
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
+
+    try {
+        return JSON.parse(response);
+    } catch (error) {
+        console.error("Gemini response:", response);
+        throw new Error("Invalid JSON returned by Gemini");
+    }
 };
 
 module.exports = {
