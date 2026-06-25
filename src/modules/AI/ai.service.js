@@ -7,16 +7,26 @@ const model = genAI.getGenerativeModel({
 });
 
 const predictiveTyping = async (text) => {
-
     const prompt = `
-Suggest ONLY 3 short next phrase completions.
+You are a JSON API.
+
+Suggest exactly 3 short next phrase completions.
 
 User typed:
 "${text}"
 
-Return ONLY a JSON array.
-Do not use markdown.
-Do not wrap the response in \`\`\`json.
+Rules:
+- Return ONLY a valid JSON array.
+- Do NOT use markdown.
+- Do NOT use \`\`\`.
+- Do NOT explain anything.
+
+Example:
+[
+  "tomorrow",
+  "at 5 pm",
+  "the office"
+]
 `;
 
     const result = await model.generateContent(prompt);
@@ -24,11 +34,22 @@ Do not wrap the response in \`\`\`json.
     let response = result.response.text().trim();
 
     response = response
-        .replace(/```json/g, "")
+        .replace(/```json/gi, "")
         .replace(/```/g, "")
         .trim();
 
-    return JSON.parse(response);
+    try {
+        const suggestions = JSON.parse(response);
+
+        if (!Array.isArray(suggestions)) {
+            throw new Error("Response is not an array");
+        }
+
+        return suggestions.slice(0, 3);
+    } catch (error) {
+        console.error("Gemini response:", response);
+        return [];
+    }
 };
 
 const smartReplies = async (message) => {

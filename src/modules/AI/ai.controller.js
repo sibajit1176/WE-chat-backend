@@ -2,13 +2,13 @@ const aiService = require("./ai.service");
 
 const predictiveTyping = async (req,res)=>{
 
-    const suggestions =
-        await aiService.predictiveTyping(req.body.text);
+   const suggestions = await predictiveTyping(req.body.text);
 
-    res.json({
-        success:true,
-        data:suggestions
-    });
+res.json({
+    
+    success: true,
+    data: suggestions
+});
 
 };
 
